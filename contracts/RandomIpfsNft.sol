@@ -13,11 +13,12 @@ error RandomIpfsNft__WithdrawFailed();
 
 contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
     enum Breed {
-        PUG,
-        SHIBA_INU,
-        ST_BERNARD
+        PUG, // Rare
+        SHIBA_INU, // Normal
+        ST_BERNARD // Common
     }
 
+    // Chainlink Variables
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
     uint64 private immutable i_subscriptionId;
     bytes32 private immutable i_gasLane;
