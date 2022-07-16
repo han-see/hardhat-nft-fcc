@@ -16,10 +16,14 @@ const deployRandomNft: DeployFunction = async (hre: HardhatRuntimeEnvironment) =
     const currentNetworkConfig = networkConfig[network.name]
     const gasLane: string = currentNetworkConfig.gasLane
     const callBackGasLimit: string = currentNetworkConfig.callBackGasLimit
-    // fix this
-    const dogTokenUris: string[] = ["a", "b", "c"]
     const mintFee: BigNumber = currentNetworkConfig.mintFee
+    const imagesLocation = "../images/randomNft"
     let vrfCoordinatorV2Address, subscriptionId: string
+    let tokenUris
+
+    if (process.env.UPLOAD_TO_PINATA == "true") {
+        tokenUris = await handleTokenUris()
+    }
 
     log("Initiating vrf parameter")
 
@@ -42,7 +46,7 @@ const deployRandomNft: DeployFunction = async (hre: HardhatRuntimeEnvironment) =
         subscriptionId,
         gasLane,
         callBackGasLimit,
-        dogTokenUris,
+        tokenUris,
         mintFee,
     ]
 
@@ -63,6 +67,13 @@ const deployRandomNft: DeployFunction = async (hre: HardhatRuntimeEnvironment) =
         log("Contract verified")
     }
     log("Finished")
+}
+
+async function handleTokenUris() {
+    const tokenUris = []
+
+    return tokenUris
+
 }
 
 export default deployRandomNft
