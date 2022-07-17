@@ -37,7 +37,7 @@ const deployRandomNft: DeployFunction = async (hre: HardhatRuntimeEnvironment) =
     let tokenUris
 
     if (process.env.UPLOAD_TO_PINATA == "true") {
-        await storeImages(imagesLocation)
+        await handleTokenUris(imagesLocation)
     }
 
     log("Initiating vrf parameter")
