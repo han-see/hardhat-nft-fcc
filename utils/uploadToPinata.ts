@@ -1,11 +1,30 @@
-import path from "path"
-import pinataSDK from "@pinata/sdk"
-import fs from "fs"
+import * as path from "path"
+import pinataSDK, { PinataPinResponse } from "@pinata/sdk"
+import * as fs from "fs"
+import { MetadataTemplate, PinataResponse } from "./interface"
 
-export async function storeImages(imagesFilePath: string) {
+const pinataApiKey = process.env.PINATA_API_KEY!
+const pinataApiSecret = process.env.PINATA_API_SECRET!
+const pinata = pinataSDK(pinataApiKey, pinataApiSecret)
+
+export async function storeImages(imagesFilePath: string): Promise<PinataResponse> {
     const fullImagesPath = path.resolve(imagesFilePath)
+    console.log(fullImagesPath)
     const files = fs.readdirSync(fullImagesPath)
-    let responses = []
+    let responses: PinataPinResponse[] = []
 
-     
+    console.log("Uploading to Pinata...")
+    for (let i in files) {
+        const readableStreamForFile = fs.createReadStream(`${fullImagesPath}/${files[i]}`)
+        try {
+            const response = await pinata.pinFileToIPFS(readableStreamForFile)
+            responses.push(response)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+    console.log("Upload finished")
+    return { responses, files }
 }
+
+export async function storeTokenUriMetadata(metadata: MetadataTemplate) {}
