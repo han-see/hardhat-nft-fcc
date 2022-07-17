@@ -1,6 +1,6 @@
-import * as path from "path"
 import pinataSDK, { PinataPinResponse } from "@pinata/sdk"
 import * as fs from "fs"
+import * as path from "path"
 import { MetadataTemplate, PinataResponse } from "./interface"
 
 const pinataApiKey = process.env.PINATA_API_KEY!
@@ -27,4 +27,15 @@ export async function storeImages(imagesFilePath: string): Promise<PinataRespons
     return { responses, files }
 }
 
-export async function storeTokenUriMetadata(metadata: MetadataTemplate) {}
+export async function storeTokenUriMetadata(
+    metadata: MetadataTemplate
+): Promise<PinataPinResponse | undefined> {
+    try {
+        console.log("Uploading token metadata to Pinata")
+        const response = await pinata.pinJSONToIPFS(metadata)
+        console.log("Finish uploading tokenmetadata")
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
