@@ -4,10 +4,26 @@ import { ethers } from "hardhat"
 import { DeployFunction } from "hardhat-deploy/dist/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { developmentChains, networkConfig } from "../helper-hardhat-config"
-import { RandomIpfsNft, VRFCoordinatorV2Mock } from "../typechain-types"
+import { VRFCoordinatorV2Mock } from "../typechain-types"
+import { MetadataTemplate } from "../utils/interface"
+import { storeImages, storeTokenUriMetadata } from "../utils/uploadToPinata"
 import { verify } from "../utils/verify"
 
 const VRF_SUB_FUND_AMOUNT = parseEther("30") // 30 Link
+
+const imagesLocation = "./images/randomNft/"
+
+const metadataTemplate: MetadataTemplate = {
+    name: "",
+    description: "",
+    image: "",
+    attributes: [
+        {
+            trait_type: "Cuteness",
+            value: 100,
+        },
+    ],
+}
 
 const deployRandomNft: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     const { getNamedAccounts, deployments, network } = hre
@@ -17,12 +33,11 @@ const deployRandomNft: DeployFunction = async (hre: HardhatRuntimeEnvironment) =
     const gasLane: string = currentNetworkConfig.gasLane
     const callBackGasLimit: string = currentNetworkConfig.callBackGasLimit
     const mintFee: BigNumber = currentNetworkConfig.mintFee
-    const imagesLocation = "../images/randomNft"
     let vrfCoordinatorV2Address, subscriptionId: string
     let tokenUris
 
     if (process.env.UPLOAD_TO_PINATA == "true") {
-        tokenUris = await handleTokenUris()
+        await storeImages(imagesLocation)
     }
 
     log("Initiating vrf parameter")
@@ -69,11 +84,22 @@ const deployRandomNft: DeployFunction = async (hre: HardhatRuntimeEnvironment) =
     log("Finished")
 }
 
-async function handleTokenUris() {
-    const tokenUris = []
+async function handleTokenUris(imagesLocation: string) {
+    const tokenUris: string[] = []
+
+    const { responses, files } = await storeImages(imagesLocation)
+
+    for (let i in responses) {
+        let tokenUriMetadata = { ...metadataTemplate }
+
+        tokenUriMetadata.name = files[i].replace(".png", "")
+        tokenUriMetadata.description = `An adorable ${tokenUriMetadata.name} pup!`
+        tokenUriMetadata.image = `ipfs://${responses[i].IpfsHash}`
+        console.log(`Uploading ${tokenUriMetadata.name}...`)
+        storeTokenUriMetadata(tokenUriMetadata)
+    }
 
     return tokenUris
-
 }
 
 export default deployRandomNft
