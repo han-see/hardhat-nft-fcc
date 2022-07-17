@@ -37,7 +37,7 @@ const deployRandomNft: DeployFunction = async (hre: HardhatRuntimeEnvironment) =
     let tokenUris
 
     if (process.env.UPLOAD_TO_PINATA == "true") {
-        await handleTokenUris(imagesLocation)
+        tokenUris = await handleTokenUris(imagesLocation)
     }
 
     log("Initiating vrf parameter")
@@ -84,7 +84,7 @@ const deployRandomNft: DeployFunction = async (hre: HardhatRuntimeEnvironment) =
     log("Finished")
 }
 
-async function handleTokenUris(imagesLocation: string) {
+async function handleTokenUris(imagesLocation: string): Promise<string[]> {
     const tokenUris: string[] = []
 
     const { responses, files } = await storeImages(imagesLocation)
@@ -96,9 +96,10 @@ async function handleTokenUris(imagesLocation: string) {
         tokenUriMetadata.description = `An adorable ${tokenUriMetadata.name} pup!`
         tokenUriMetadata.image = `ipfs://${responses[i].IpfsHash}`
         console.log(`Uploading ${tokenUriMetadata.name}...`)
-        storeTokenUriMetadata(tokenUriMetadata)
+        const metadataUploadResponse = await storeTokenUriMetadata(tokenUriMetadata)
+        tokenUris.push(`ipfs://${metadataUploadResponse?.IpfsHash}`)
     }
-
+    console.log("Token URIs uploaded!")
     return tokenUris
 }
 
