@@ -10,6 +10,7 @@ export interface networkConfigItem {
     callBackGasLimit: string
     interval: string
     mintFee: BigNumber
+    ethUsdPriceFeedAddress?: string
 }
 
 export interface networkConfigInfo {
@@ -26,6 +27,7 @@ export const networkConfig: networkConfigInfo = {
         callBackGasLimit: "500000", // 500,000
         interval: "30",
         mintFee: parseEther("0.1"),
+        ethUsdPriceFeedAddress: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
     },
     hardhat: {
         blockConfirmations: 1,
@@ -34,7 +36,10 @@ export const networkConfig: networkConfigInfo = {
         callBackGasLimit: "500000", // 500,000
         interval: "30",
         mintFee: parseEther("1"),
+        ethUsdPriceFeedAddress: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
     },
 }
 
+export const DECIMALS = "18"
+export const INITIAL_PRICE = "200000000000000000000"
 export const developmentChains: string[] = ["hardhat", "localhost"]
