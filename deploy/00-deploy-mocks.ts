@@ -1,7 +1,7 @@
 import { parseEther, parseUnits } from "ethers/lib/utils"
 import { DeployFunction } from "hardhat-deploy/dist/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
-import { developmentChains, networkConfig } from "../helper-hardhat-config"
+import { DECIMALS, developmentChains, INITIAL_PRICE, networkConfig } from "../helper-hardhat-config"
 
 const BASE_FEE = parseEther("0.25") // 0.25 Link is the premium per Request in Rinkeby Network
 const GAS_PRICE_LINK = parseUnits("1", "gwei")
@@ -20,10 +20,16 @@ const deployMocks: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
             log: true,
             waitConfirmations: networkConfig[network.name].blockConfirmations || 1,
         })
+
+        await deploy("MockV3Aggregator", {
+            from: deployer,
+            log: true,
+            args: [DECIMALS, INITIAL_PRICE],
+        })
         log("VRF Deployment successfull")
         log("--------------------")
     }
 }
 
 export default deployMocks
-deployMocks.tags = ["mocks", "all", "randomNft"]
+deployMocks.tags = ["mocks", "all", "randomNft", "dynamicNft"]
