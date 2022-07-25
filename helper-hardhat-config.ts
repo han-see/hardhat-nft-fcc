@@ -41,5 +41,6 @@ export const networkConfig: networkConfigInfo = {
 }
 
 export const DECIMALS = "18"
-export const INITIAL_PRICE = "200000000000000000000"
+export const INITIAL_PRICE = parseEther("2000")
+
 export const developmentChains: string[] = ["hardhat", "localhost"]
