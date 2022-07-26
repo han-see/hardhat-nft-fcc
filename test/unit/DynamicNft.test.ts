@@ -73,7 +73,7 @@ const lowTokenUri =
               })
 
               it("assign the correct tokenURI for high price mint", async () => {
-                  const tx = await dynamicNft.mintNft(parseEther("304004"))
+                  const tx = await dynamicNft.mintNft(parseEther("3000"))
                   const txReceipt = await tx.wait()
                   const tokenId = await txReceipt.events![1].args!.tokenId
                   const tokenUriResponse = await dynamicNft.tokenURI(tokenId)
